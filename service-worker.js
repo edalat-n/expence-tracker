@@ -2,11 +2,11 @@ const CACHE='expense-tracker-corrected-final-v1';
 const CORE=['./','./index.html'];
 const OPTIONAL=[
  './manifest.webmanifest',
- './icons/purple-reticle-final-32.png',
- './icons/purple-reticle-final-180.png',
- './icons/purple-reticle-final-192.png',
- './icons/purple-reticle-final-512.png',
- './icons/purple-reticle-final-maskable-512.png'
+ './purple-reticle-final-32.png',
+ './purple-reticle-final-180.png',
+ './purple-reticle-final-192.png',
+ './purple-reticle-final-512.png',
+ './purple-reticle-final-maskable-512.png'
 ];
 
 self.addEventListener('install',event=>{
