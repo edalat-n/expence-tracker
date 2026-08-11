@@ -13,19 +13,19 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "./icons/purple-reticle-final-192.png",
+      "src": "./purple-reticle-final-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/purple-reticle-final-512.png",
+      "src": "./purple-reticle-final-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/purple-reticle-final-maskable-512.png",
+      "src": "./purple-reticle-final-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
