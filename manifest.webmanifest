@@ -1,11 +1,14 @@
 {
+  "id": "/expence-tracker/",
   "name": "ثبت مخارج",
   "short_name": "ثبت مخارج",
   "description": "ثبت درآمد، هزینه، گزارش و آنالیز عملکرد",
-  "id": "./",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/expence-tracker/",
+  "scope": "/expence-tracker/",
   "display": "standalone",
+  "display_override": [
+    "standalone"
+  ],
   "background_color": "#FFFFFF",
   "theme_color": "#7130E8",
   "orientation": "portrait-primary",
@@ -13,19 +16,19 @@
   "dir": "rtl",
   "icons": [
     {
-      "src": "./purple-reticle-final-192.png",
+      "src": "/expence-tracker/purple-reticle-final-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./purple-reticle-final-512.png",
+      "src": "/expence-tracker/purple-reticle-final-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./purple-reticle-final-maskable-512.png",
+      "src": "/expence-tracker/purple-reticle-final-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
