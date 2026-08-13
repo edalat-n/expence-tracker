@@ -55,7 +55,11 @@ textarea{min-height:74px;resize:vertical}
 
 
 .selected-cat-indicator{margin-top:8px;padding:8px 10px;border:1.5px dashed var(--line);border-radius:9px;background:var(--bg);font-size:11px;font-weight:800;color:var(--text)}
+
 .selected-cat-indicator b{font-weight:900}
+.jdate-wrap{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:6px}
+.jdate-wrap select{font-size:14px;padding:10px}
+
 </style>
 
 
@@ -80,7 +84,14 @@ textarea{min-height:74px;resize:vertical}
 <div class="panel-title">ثبت تراکنش جدید</div>
 <div class="type-switch"><button class="type-btn on expense" data-type="expense">هزینه</button><button class="type-btn income" data-type="income">درآمد</button></div>
 <div class="form-grid" style="margin-top:8px">
-<input id="amount" inputmode="numeric" placeholder="مبلغ به تومان"><input id="date" type="date"><input id="title" class="full" placeholder="عنوان، مثلاً خرید ابزار">
+<input id="amount" inputmode="numeric" placeholder="مبلغ به تومان">
+<div class="jdate-wrap">
+  <select id="jDay" aria-label="روز"></select>
+  <select id="jMonth" aria-label="ماه"></select>
+  <select id="jYear" aria-label="سال"></select>
+</div>
+<input id="date" type="hidden">
+<input id="title" class="full" placeholder="عنوان، مثلاً خرید ابزار">
 <div class="full"><div style="font-size:11px;font-weight:700;margin-bottom:6px">انتخاب حوزه</div><div class="cats" id="cats"></div><div id="selectedCatIndicator" class="selected-cat-indicator">حوزه انتخاب‌شده: <b>—</b></div><select id="subcat" style="margin-top:8px"><option value="">انتخاب زیرحوزه</option></select></div>
 <textarea id="note" class="full" placeholder="توضیحات اختیاری"></textarea></div>
 <button class="save-btn" id="saveBtn">ثبت تراکنش</button></div>
@@ -182,6 +193,89 @@ function formatAmountInput(value){
 function parseAmount(value){
   return Number(toEnDigits(value).replace(/[^\d]/g,""));
 }
+
+/* تبدیل تاریخ جلالی/میلادی - بدون کتابخانه خارجی */
+function div(a,b){return ~~(a/b)}
+function jalCal(jy){
+  const breaks=[-61,9,38,199,426,686,756,818,1111,1181,1210,1635,2060,2097,2192,2262,2324,2394,2456,3178];
+  const bl=breaks.length; let gy=jy+621,leapJ=-14,jp=breaks[0],jm=0,jump=0,n=0,i=1;
+  if(jy<jp||jy>=breaks[bl-1]) throw new Error("Invalid Jalali year");
+  for(;i<bl;i++){jm=breaks[i];jump=jm-jp;if(jy<jm)break;leapJ+=div(jump,33)*8+div(jump%33,4);jp=jm}
+  n=jy-jp; leapJ+=div(n,33)*8+div((n%33)+3,4);
+  if(jump%33===4&&jump-n===4) leapJ++;
+  const leapG=div(gy,4)-div((div(gy,100)+1)*3,4)-150;
+  const march=20+leapJ-leapG;
+  if(jump-n<6) n=n-jump+div(jump+4,33)*33;
+  let leap=((n+1)%33-1)%4; if(leap===-1) leap=4;
+  return {leap,gy,march};
+}
+function g2d(gy,gm,gd){
+  let d=div((gy+div(gm-8,6)+100100)*1461,4)+div(153*((gm+9)%12)+2,5)+gd-34840408;
+  d=d-div(div(gy+100100+div(gm-8,6),100)*3,4)+752;
+  return d;
+}
+function d2g(jdn){
+  let j=4*jdn+139361631;
+  j=j+div(div(4*jdn+183187720,146097)*3,4)*4-3908;
+  const i=div((j%1461),4)*5+308;
+  const gd=div(i%153,5)+1;
+  const gm=(div(i,153)%12)+1;
+  const gy=div(j,1461)-100100+div(8-gm,6);
+  return {gy,gm,gd};
+}
+function j2d(jy,jm,jd){
+  const r=jalCal(jy);
+  return g2d(r.gy,3,r.march)+(jm-1)*31-div(jm,7)*(jm-7)+jd-1;
+}
+function d2j(jdn){
+  const g=d2g(jdn),jy=g.gy-621,r=jalCal(jy),jdn1f=g2d(g.gy,3,r.march);
+  let k=jdn-jdn1f,jm,jd,jy2=jy;
+  if(k>=0){
+    if(k<=185){jm=1+div(k,31);jd=(k%31)+1;return {jy:jy2,jm,jd}}
+    k-=186;
+  }else{
+    jy2--; k+=179;
+    if(r.leap===1)k++;
+  }
+  jm=7+div(k,30);jd=(k%30)+1;
+  return {jy:jy2,jm,jd};
+}
+function toJalali(gy,gm,gd){return d2j(g2d(gy,gm,gd))}
+function toGregorian(jy,jm,jd){return d2g(j2d(jy,jm,jd))}
+function isJLeap(jy){return jalCal(jy).leap===0}
+function jMonthDays(jy,jm){return jm<=6?31:jm<=11?30:(isJLeap(jy)?30:29)}
+
+function setInternalDateFromJalali(){
+  const jy=Number($("#jYear").value),jm=Number($("#jMonth").value),jd=Number($("#jDay").value);
+  if(!jy||!jm||!jd)return;
+  const g=toGregorian(jy,jm,jd);
+  $("#date").value=`${g.gy}-${String(g.gm).padStart(2,"0")}-${String(g.gd).padStart(2,"0")}`;
+}
+function refreshJDays(keepDay=true){
+  const jy=Number($("#jYear").value),jm=Number($("#jMonth").value);
+  const prev=keepDay?Number($("#jDay").value):1;
+  const max=jMonthDays(jy,jm);
+  $("#jDay").innerHTML=Array.from({length:max},(_,i)=>`<option value="${i+1}">${fa(i+1)}</option>`).join("");
+  $("#jDay").value=String(Math.min(prev||1,max));
+  setInternalDateFromJalali();
+}
+function setJalaliPickerFromGregorian(str){
+  const d=new Date((str||today())+"T12:00");
+  const j=toJalali(d.getFullYear(),d.getMonth()+1,d.getDate());
+  if(!$("#jYear").options.length){
+    $("#jYear").innerHTML=Array.from({length:21},(_,i)=>j.jy-10+i).map(y=>`<option value="${y}">${fa(y)}</option>`).join("");
+    $("#jMonth").innerHTML=MONTHS.map((m,i)=>`<option value="${i+1}">${m}</option>`).join("");
+  }
+  if(![...$("#jYear").options].some(o=>Number(o.value)===j.jy)){
+    $("#jYear").insertAdjacentHTML("beforeend",`<option value="${j.jy}">${fa(j.jy)}</option>`);
+  }
+  $("#jYear").value=String(j.jy);
+  $("#jMonth").value=String(j.jm);
+  refreshJDays(false);
+  $("#jDay").value=String(j.jd);
+  setInternalDateFromJalali();
+}
+
 const getCats=t=>(t||selectedType)==="income"?incomeCats:expenseCats;
 function save(){localStorage.setItem(KEY,JSON.stringify(txs));localStorage.setItem(EXKEY,JSON.stringify(expenseCats));localStorage.setItem(INKEY,JSON.stringify(incomeCats));renderAll()}
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
@@ -190,7 +284,11 @@ const MONTHS=["فروردین","اردی بهشت","خرداد","تیر","اَم
 function pparts(d){const a=new Intl.DateTimeFormat("fa-IR-u-ca-persian",{year:"numeric",month:"numeric",day:"numeric",weekday:"long"}).formatToParts(d);const v=t=>a.find(x=>x.type===t)?.value||"";const num=s=>Number(String(s).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)));return{y:num(v("year")),m:num(v("month")),d:num(v("day")),w:v("weekday")}}
 function disp(str){const d=new Date(str+"T12:00");const p=pparts(d);return `${fa(p.d)} ${MONTHS[p.m-1]} ${fa(p.y+1180)}`}
 function dispObj(d){const p=pparts(d);return `${p.w} ${fa(p.d)} ${MONTHS[p.m-1]} ${fa(p.y+1180)}`}
-$("#date").value=today();$("#todayFa").textContent=dispObj(new Date());
+$("#todayFa").textContent=dispObj(new Date());
+setJalaliPickerFromGregorian(today());
+$("#jYear").addEventListener("change",()=>refreshJDays(true));
+$("#jMonth").addEventListener("change",()=>refreshJDays(true));
+$("#jDay").addEventListener("change",setInternalDateFromJalali);
 $("#amount").addEventListener("input",function(){
   this.value=formatAmountInput(this.value);
 });
@@ -259,7 +357,7 @@ function renderManage(){
 function renderAll(){renderCats();renderHome();renderHistory();renderReport();renderAnalysis();renderManage()}
 document.querySelectorAll(".type-btn[data-type]").forEach(b=>b.onclick=()=>{selectedType=b.dataset.type;selectedCat=getCats()[0]?.id||null;selectedSub="";document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x===b));renderCats()});
 $("#saveBtn").onclick=()=>{const amount=parseAmount($("#amount").value);if(!amount)return alert("مبلغ را وارد کنید.");const item={id:editingId||String(Date.now()),type:selectedType,amount,catId:selectedCat,subcat:selectedSub,date:$("#date").value||today(),title:$("#title").value.trim(),note:$("#note").value.trim(),createdAt:editingId?(txs.find(t=>t.id===editingId)?.createdAt||Date.now()):Date.now()};if(editingId){txs=txs.map(t=>t.id===editingId?item:t);editingId=null;$("#saveBtn").textContent="ثبت تراکنش"}else txs.push(item);$("#amount").value="";$("#title").value="";$("#note").value="";selectedSub="";save()};
-window.editTx=id=>{const t=txs.find(x=>x.id===id);if(!t)return;editingId=id;selectedType=t.type;selectedCat=t.catId;selectedSub=t.subcat||"";$("#amount").value=formatAmountInput(t.amount);$("#date").value=t.date;$("#title").value=t.title;$("#note").value=t.note;document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x.dataset.type===t.type));$("#saveBtn").textContent="ذخیره ویرایش";document.querySelector('[data-view="homeView"]').click();renderCats();scrollTo({top:0,behavior:"smooth"})};
+window.editTx=id=>{const t=txs.find(x=>x.id===id);if(!t)return;editingId=id;selectedType=t.type;selectedCat=t.catId;selectedSub=t.subcat||"";$("#amount").value=formatAmountInput(t.amount);$("#date").value=t.date;setJalaliPickerFromGregorian(t.date);$("#title").value=t.title;$("#note").value=t.note;document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x.dataset.type===t.type));$("#saveBtn").textContent="ذخیره ویرایش";document.querySelector('[data-view="homeView"]').click();renderCats();scrollTo({top:0,behavior:"smooth"})};
 window.delTx=id=>{if(confirm("تراکنش حذف شود؟")){txs=txs.filter(t=>t.id!==id);save()}};
 $("#prevDay").onclick=()=>{historyDate=addDays(historyDate,-1);renderHistory()};$("#nextDay").onclick=()=>{historyDate=addDays(historyDate,1);renderHistory()};$("#typeFilter").onchange=renderHistory;$("#catFilter").onchange=renderHistory;
 $("#reportType").onchange=renderReport;$("#reportPeriod").onchange=renderReport;$("#reportCat").onchange=renderReport;$("#analysisType").onchange=()=>{analysisSubs=[];renderAnalysis()};$("#analysisPeriod").onchange=renderAnalysis;$("#analysisCat").onchange=()=>{analysisSubs=[];renderAnalysis()};
