@@ -43,6 +43,7 @@ textarea{min-height:74px;resize:vertical}
 .note{font-size:10px;color:var(--muted);line-height:1.8}.analysis-subs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.sub-chip{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:18px;padding:7px 9px;font-size:10px;font-weight:700}.sub-chip.on{background:var(--purple);color:white;border-color:var(--purple)}
 .manage-card{border:1px solid var(--line);border-radius:10px;padding:9px;margin-bottom:9px}.manage-row{display:flex;gap:6px;margin-bottom:6px}
 @media(max-width:360px){.form-grid{grid-template-columns:1fr}.full{grid-column:1}.cats{grid-template-columns:1fr}.metric-grid{grid-template-columns:1fr}.report-toolbar{grid-template-columns:1fr}}
+
 .dev-footer{text-align:center;margin-top:14px;padding:14px 10px 6px;border-top:1px solid var(--line);color:var(--text)}
 .dev-name{font-size:11px;font-weight:800;margin-bottom:6px}
 .dev-dedication{font-size:9px;color:var(--muted);line-height:1.9;margin-bottom:9px}
@@ -51,23 +52,18 @@ textarea{min-height:74px;resize:vertical}
 .install-app-btn:disabled{opacity:.65;cursor:default}
 .install-help{display:none;margin:8px auto 0;max-width:360px;font-size:10px;line-height:1.9;color:var(--muted)}
 .install-help.show{display:block}
+
+
 .selected-cat-indicator{margin-top:8px;padding:8px 10px;border:1.5px dashed var(--line);border-radius:9px;background:var(--bg);font-size:11px;font-weight:800;color:var(--text)}
 .selected-cat-indicator b{font-weight:900}
 </style>
 
-<link rel="manifest" href="/expence-tracker/manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="/expence-tracker/purple-reticle-final-192.png">
-<link rel="apple-touch-icon" href="/expence-tracker/purple-reticle-final-192.png">
-<meta name="theme-color" content="#7130E8">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="ثبت مخارج">
 </head>
 <body>
 <div class="page">
 <header class="hdr"><div class="hdr-grp">گروه درخشیدن و دریافت کردن بوشهر</div><div class="hdr-title">ثبت مخارج</div><div class="hdr-sub">پول در چه حوزه‌هایی خرج یا دریافت می‌شود؟</div></header>
 <div class="top-row"><div id="todayFa" style="font-size:11px;color:var(--muted);font-weight:700"></div><button class="theme" id="themeBtn">☾ حالت شب</button></div>
+
 <section id="homeView" class="view on">
 <div class="balance-card"><small>مانده کل</small><strong id="balance">۰ تومان</strong><div class="mini-stats"><div class="mini"><span>کل درآمد</span><b id="incomeTotal">۰ تومان</b></div><div class="mini"><span>کل مخارج</span><b id="expenseTotal">۰ تومان</b></div></div></div>
 <div class="panel">
@@ -80,30 +76,50 @@ textarea{min-height:74px;resize:vertical}
 <button class="save-btn" id="saveBtn">ثبت تراکنش</button></div>
 <div class="panel"><div class="panel-title">آخرین تراکنش‌ها</div><div class="tx-list" id="recentList"></div></div>
 </section>
+
 <section id="listView" class="view">
-<div class="panel"><div class="panel-title">سوابق روزانه</div>
+<div class="panel"><div class="report-head"><div class="panel-title" style="margin:0">سوابق روزانه</div><button id="shareHistory" class="share-btn">اشتراک‌گذاری عکس</button></div>
 <div class="day-nav"><button id="prevDay">روز قبل</button><div class="day-label" id="historyDateLabel"></div><button id="nextDay">روز بعد</button></div>
 <div class="metric-grid"><div class="metric-box"><span>درآمد روز</span><b id="dayIncome"></b></div><div class="metric-box"><span>هزینه روز</span><b id="dayExpense"></b></div><div class="metric-box"><span>مانده روز</span><b id="dayBalance"></b></div></div>
 <div class="filters"><select id="typeFilter"><option value="all">همه</option><option value="expense">فقط هزینه</option><option value="income">فقط درآمد</option></select><select id="catFilter"><option value="all">همه حوزه‌ها</option></select></div>
 <div class="tx-list" id="allList"></div></div>
 </section>
-<section id="reportView" class="view"><div class="panel">
+
+<section id="reportView" class="view">
+<div class="panel">
 <div class="report-head"><div class="panel-title" style="margin:0">گزارش</div><div class="report-actions"><button id="reportEye" class="eye-btn">👁</button><button id="shareReport" class="share-btn">اشتراک‌گذاری عکس</button></div></div>
 <div class="report-toolbar"><select id="reportType"><option value="expense">هزینه</option><option value="income">درآمد</option></select><select id="reportPeriod"><option value="daily">روزانه</option><option value="weekly" selected>هفتگی</option><option value="monthly">ماهانه</option><option value="3m">۳ ماهه</option><option value="6m">۶ ماهه</option><option value="yearly">سالانه</option></select><select id="reportCat" class="full"></select></div>
 <div class="metric-grid"><div class="metric-box"><span>کل درآمد</span><b id="rIncome"></b></div><div class="metric-box"><span>کل هزینه</span><b id="rExpense"></b></div><div class="metric-box"><span>مانده</span><b id="rBalance"></b></div></div>
 <div id="reportRange" class="note"></div><div class="chart-wrap"><canvas id="reportChart" width="900" height="430"></canvas></div><div id="reportNote" class="note"></div>
-<div style="margin-top:12px"><div class="panel-title">تفکیک حوزه‌ها</div><div id="reportRows"></div></div></div></section>
-<section id="analysisView" class="view"><div class="panel">
+<div style="margin-top:12px"><div class="panel-title">تفکیک حوزه‌ها</div><div id="reportRows"></div></div>
+</div>
+</section>
+
+<section id="analysisView" class="view">
+<div class="panel">
 <div class="report-head"><div class="panel-title" style="margin:0">آنالیز عملکرد</div><button id="analysisEye" class="eye-btn">👁</button></div>
 <div class="report-toolbar"><select id="analysisType"><option value="expense">هزینه</option><option value="income">درآمد</option></select><select id="analysisPeriod"><option value="weekly" selected>هفتگی</option><option value="monthly">ماهانه</option><option value="3m">۳ ماهه</option><option value="6m">۶ ماهه</option><option value="yearly">سالانه</option></select><select id="analysisCat" class="full"></select></div>
 <div style="font-size:11px;font-weight:800">انتخاب زیرحوزه‌ها</div><div class="analysis-subs" id="analysisSubs"></div>
 <div class="chart-wrap"><canvas id="analysisChart" width="900" height="430"></canvas></div>
-<div class="note">چند زیرحوزه را هم‌زمان انتخاب کنید تا روند آن‌ها روی یک نمودار مقایسه شود.</div></div></section>
-<section id="settingsView" class="view"><div class="panel"><div class="panel-title">مدیریت حوزه‌ها</div><div class="type-switch" style="margin-bottom:10px"><button class="type-btn expense on" id="manageExpense">حوزه‌های هزینه</button><button class="type-btn income" id="manageIncome">حوزه‌های درآمد</button></div><div id="manageCats"></div></div></section>
-<div class="install-app-wrap"><button id="installAppBtn" class="install-app-btn" type="button">⬇ نصب برنامه</button><div id="installHelp" class="install-help">اگر پنجره نصب باز نشد، از منوی مرورگر «Install app / نصب برنامه» یا «Add to Home Screen / افزودن به صفحه اصلی» را انتخاب کنید.</div></div>
-<div class="dev-footer"><div class="dev-name">ایجاد و توسعه‌دهنده: مهندس عدالت نظری</div><div class="dev-dedication">«تقدیم به همه انسان‌هایی که از بیماری کم‌درآمدی در عذابند.»</div></div>
+<div class="note">چند زیرحوزه را هم‌زمان انتخاب کنید تا روند آن‌ها روی یک نمودار مقایسه شود.</div>
 </div>
+</section>
+
+<section id="settingsView" class="view"><div class="panel"><div class="panel-title">مدیریت حوزه‌ها</div><div class="type-switch" style="margin-bottom:10px"><button class="type-btn expense on" id="manageExpense">حوزه‌های هزینه</button><button class="type-btn income" id="manageIncome">حوزه‌های درآمد</button></div><div id="manageCats"></div></div></section>
+
+
+
+
+<div class="dev-footer">
+  <div class="dev-name">ایجاد و توسعه‌دهنده: مهندس عدالت نظری</div>
+  <div class="dev-dedication">«تقدیم به همه انسان‌هایی که از بیماری کم‌درآمدی در عذابند.»</div>
+  
+</div>
+
+</div>
+
 <nav class="bnav"><button class="on" data-view="homeView"><span>⌂</span>ثبت</button><button data-view="listView"><span>☷</span>سوابق</button><button data-view="reportView"><span>▥</span>گزارش</button><button data-view="analysisView"><span>⌁</span>آنالیز</button><button data-view="settingsView"><span>⚙</span>حوزه‌ها</button></nav>
+
 <script>
 const DEFAULT_EXPENSE_CATS=[
 {id:1,label:"مسکن و خانه",color:"#8B5E3C",subs:["اجاره و شارژ","قبوض خانه","تعمیرات خانه","لوازم و وسایل خانه"]},
@@ -127,16 +143,20 @@ const DEFAULT_INCOME_CATS=[
 {id:108,label:"درآمد آنلاین",color:"#4F46E5",subs:["تولید محتوا","تبلیغات","فروش اینترنتی","درآمد شبکه‌های اجتماعی و پلتفرم‌ها"]},
 {id:109,label:"درآمد جانبی",color:"#EA580C",subs:["فروش وسایل شخصی","درآمد اتفاقی","درآمد موقت","سایر درآمدهای جانبی"]},
 {id:110,label:"وام و تسهیلات",color:"#475569",subs:["وام بانکی","وام قرض‌الحسنه","وام محل کار","وام شخصی/خانوادگی","تسهیلات خرید کالا","سایر وام‌ها"]}];
-const KEY="bushehr_expense_test_v1", EXKEY="bushehr_expense_cats_v1", INKEY="bushehr_income_cats_v1";
+
+const OLD_KEY="bushehr_expense_test_v1";
+const KEY="bushehr_expense_v2";
+const EXKEY="bushehr_expense_cats_v1";
+const INKEY="bushehr_income_cats_v1";
 let expenseCats=JSON.parse(localStorage.getItem(EXKEY)||"null")||DEFAULT_EXPENSE_CATS;
 let incomeCats=JSON.parse(localStorage.getItem(INKEY)||"null")||DEFAULT_INCOME_CATS;
-let txs=JSON.parse(localStorage.getItem(KEY)||"[]");
-let selectedType="expense",selectedCat=expenseCats[0].id,selectedSub="",editingId=null,historyDate="",privacyHidden=false,manageType="expense",analysisSubs=[];
+let oldTxs=JSON.parse(localStorage.getItem(OLD_KEY)||"[]");
+let newTxs=JSON.parse(localStorage.getItem(KEY)||"null");
+let txs=Array.isArray(newTxs)?newTxs:(Array.isArray(oldTxs)?oldTxs:[]);
+if(!localStorage.getItem(KEY)&&txs.length){localStorage.setItem(KEY,JSON.stringify(txs));}
+let selectedType="expense",selectedCat=null,selectedSub="",editingId=null,historyDate="",privacyHidden=false,manageType="expense",analysisSubs=[];
 const $=s=>document.querySelector(s), esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const money=n=>Number(n||0).toLocaleString("fa-IR")+" تومان",fa=n=>Number(n).toLocaleString("fa-IR");
-function toEnDigits(s){return String(s||"").replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d));}
-function formatAmountInput(value){const digits=toEnDigits(value).replace(/[^0-9]/g,"");if(!digits)return "";return digits.replace(/\B(?=(\d{3})+(?!\d))/g,",");}
-function parseAmount(value){return Number(toEnDigits(value).replace(/[^\d]/g,""));}
 const getCats=t=>(t||selectedType)==="income"?incomeCats:expenseCats;
 function save(){localStorage.setItem(KEY,JSON.stringify(txs));localStorage.setItem(EXKEY,JSON.stringify(expenseCats));localStorage.setItem(INKEY,JSON.stringify(incomeCats));renderAll()}
 function today(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
@@ -146,24 +166,31 @@ function pparts(d){const a=new Intl.DateTimeFormat("fa-IR-u-ca-persian",{year:"n
 function disp(str){const d=new Date(str+"T12:00");const p=pparts(d);return `${fa(p.d)} ${MONTHS[p.m-1]} ${fa(p.y+1180)}`}
 function dispObj(d){const p=pparts(d);return `${p.w} ${fa(p.d)} ${MONTHS[p.m-1]} ${fa(p.y+1180)}`}
 $("#date").value=today();$("#todayFa").textContent=dispObj(new Date());
-$("#amount").addEventListener("input",function(){this.value=formatAmountInput(this.value);});
+
 function renderCats(){
- const cats=getCats(); if(!cats.some(c=>c.id===selectedCat)){selectedCat=cats[0]?.id||null;selectedSub=""}
+ const cats=getCats();
+ if(selectedCat!==null&&!cats.some(c=>c.id===selectedCat)){selectedCat=null;selectedSub=""}
  $("#cats").classList.toggle("income",selectedType==="income");
  $("#cats").innerHTML=cats.map(c=>`<button class="cat ${selectedCat===c.id?"on":""}" data-id="${c.id}" style="--cat:${c.color};border-color:${c.color};color:${c.color};${selectedCat===c.id?`background:${c.color}`:""}">${esc(c.label)}</button>`).join("");
- const c=cats.find(x=>x.id===selectedCat),subs=c?.subs||[];const ind=$("#selectedCatIndicator");if(ind)ind.innerHTML=`حوزه انتخاب‌شده: <b style="color:${c?.color||"var(--purple)"}">${esc(c?.label||"—")}</b>`;
- $("#subcat").innerHTML='<option value="">انتخاب زیرحوزه</option>'+subs.map(s=>`<option ${selectedSub===s?"selected":""}>${esc(s)}</option>`).join("");
+ const c=cats.find(x=>x.id===selectedCat),subs=c?.subs||[];const ind=$("#selectedCatIndicator");if(ind)ind.innerHTML=selectedCat?`حوزه انتخاب‌شده: <b style="color:${c?.color||"var(--purple)"}">${esc(c?.label||"—")}</b>`:`حوزه انتخاب‌شده: <b>انتخاب نشده</b>`;
+ $("#subcat").innerHTML='<option value="">انتخاب زیرحوزه</option>'+subs.map(s=>`<option value="${esc(s)}" ${selectedSub===s?"selected":""}>${esc(s)}</option>`).join("");
  document.querySelectorAll(".cat").forEach(b=>b.onclick=()=>{selectedCat=Number(b.dataset.id);selectedSub="";renderCats()});
- $("#subcat").onchange=()=>selectedSub=$("#subcat").value;
+ $("#subcat").onchange=()=>{selectedSub=$("#subcat").value};
 }
 function catById(id){return [...expenseCats,...incomeCats].find(c=>c.id===id)||{label:"بدون حوزه",color:"#777"}}
 function txHtml(t){const c=catById(t.catId);return `<div class="tx"><div class="tx-main"><div class="tx-title"><span style="color:${c.color}">●</span> ${esc(t.title||c.label)}</div><div class="tx-meta">${esc(c.label)}${t.subcat?" / "+esc(t.subcat):""} • ${disp(t.date)}${t.note?" • "+esc(t.note):""}</div></div><div class="tx-amount ${t.type}">${t.type==="expense"?"−":"+"}${money(t.amount)}</div><div class="tx-actions"><button class="icon-btn" onclick="editTx('${t.id}')">ویرایش</button><button class="icon-btn" onclick="delTx('${t.id}')">حذف</button></div></div>`}
+
 function renderHome(){const inc=txs.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0),exp=txs.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0);$("#balance").textContent=money(inc-exp);$("#incomeTotal").textContent=money(inc);$("#expenseTotal").textContent=money(exp);$("#recentList").innerHTML=[...txs].sort((a,b)=>b.createdAt-a.createdAt).slice(0,5).map(txHtml).join("")||'<div class="empty">هنوز تراکنشی ثبت نشده است.</div>'}
 function renderHistory(){
- $("#historyDateLabel").textContent=disp(historyDate);const day=txs.filter(t=>t.date===historyDate),inc=day.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0),exp=day.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0);
+ $("#historyDateLabel").textContent=disp(historyDate);
+ const day=txs.filter(t=>t.date===historyDate),inc=day.filter(t=>t.type==="income").reduce((s,t)=>s+Number(t.amount||0),0),exp=day.filter(t=>t.type==="expense").reduce((s,t)=>s+Number(t.amount||0),0);
  $("#dayIncome").textContent=money(inc);$("#dayExpense").textContent=money(exp);$("#dayBalance").textContent=money(inc-exp);
- $("#catFilter").innerHTML='<option value="all">همه حوزه‌ها</option>'+[...expenseCats,...incomeCats].map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");
- const tf=$("#typeFilter").value,cf=$("#catFilter").value;const f=day.filter(t=>(tf==="all"||t.type===tf)&&(cf==="all"||t.catId===Number(cf))).sort((a,b)=>b.createdAt-a.createdAt);
+ const tf=$("#typeFilter").value||"all",oldCat=$("#catFilter").value||"all";
+ let filterCats=tf==="expense"?expenseCats:(tf==="income"?incomeCats:[...expenseCats,...incomeCats]);
+ $("#catFilter").innerHTML='<option value="all">همه حوزه‌ها</option>'+filterCats.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");
+ $("#catFilter").value=(oldCat==="all"||filterCats.some(c=>String(c.id)===String(oldCat)))?oldCat:"all";
+ const cf=$("#catFilter").value;
+ const f=day.filter(t=>(tf==="all"||t.type===tf)&&(cf==="all"||t.catId===Number(cf))).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0));
  $("#allList").innerHTML=f.map(txHtml).join("")||'<div class="empty">در این روز تراکنشی ثبت نشده است.</div>';
 }
 function addDays(str,n){const d=new Date(str+"T12:00");d.setDate(d.getDate()+n);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
@@ -173,31 +200,33 @@ function startPMonth(d){const p=pparts(d);let x=new Date(d);x.setHours(12,0,0,0)
 function startPYear(d){const p=pparts(d);let x=new Date(d);x.setHours(12,0,0,0);for(let i=0;i<370;i++){const q=pparts(x);if(q.y===p.y&&q.m===1&&q.d===1)return x;x.setDate(x.getDate()-1)}return x}
 function monthsBackStart(d,n){const p=pparts(d),target=p.y*12+p.m-1-n;let x=new Date(d);for(let i=0;i<400;i++){const q=pparts(x);if(q.y*12+q.m-1<=target)return startPMonth(x);x.setDate(x.getDate()-7)}return x}
 function periodInfo(p){const now=new Date();now.setHours(12,0,0,0);let s=new Date(now),e=new Date(now),unit="day";if(p==="weekly"){s=startWeek(now);e=new Date(s);e.setDate(e.getDate()+6)}else if(p==="monthly"){s=startPMonth(now);unit="week"}else if(p==="3m"){s=monthsBackStart(now,2);unit="week"}else if(p==="6m"){s=monthsBackStart(now,5);unit="week"}else if(p==="yearly"){s=startPYear(now);unit="week"}return{s,e,unit}}
-function buckets(p){const{ s,e,unit}=periodInfo(p),a=[];if(unit==="day"){let d=new Date(s),i=0;while(d<=e&&i<8){a.push({label:p==="weekly"?pparts(d).w:fa(pparts(d).d),s:new Date(d),e:new Date(d)});d.setDate(d.getDate()+1);i++}}else{let d=startWeek(s),i=1;while(d<=e&&i<=60){let z=new Date(d);z.setDate(z.getDate()+6);a.push({label:"هفته "+fa(i),s:new Date(d),e:z});d.setDate(d.getDate()+7);i++}}return{a,s,e}}
-function inRange(t,s,e){const d=new Date(t.date+"T12:00");return d>=s&&d<=e}
-function bucketVal(type,cat,sub,b){return txs.filter(t=>t.type===type&&t.catId===cat&&(!sub||t.subcat===sub)&&inRange(t,b.s,b.e)).reduce((s,t)=>s+t.amount,0)}
-function draw(canvas,labels,series,percent=false){
- const c=canvas.getContext("2d"),W=canvas.width,H=canvas.height,st=getComputedStyle(document.documentElement),bg=st.getPropertyValue("--panel").trim()||"#fff",txt=st.getPropertyValue("--text").trim()||"#222",ln=st.getPropertyValue("--line").trim()||"#ccc";c.clearRect(0,0,W,H);c.fillStyle=bg;c.fillRect(0,0,W,H);
- const pad={l:70,r:25,t:34,b:65},cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;let max=percent?100:Math.max(1,...series.flatMap(s=>s.v));c.font="20px Tahoma";c.strokeStyle=ln;c.fillStyle=txt;c.textAlign="right";
- for(let i=0;i<=4;i++){const y=pad.t+ch*i/4;c.beginPath();c.moveTo(pad.l,y);c.lineTo(W-pad.r,y);c.stroke();const v=Math.round(max*(1-i/4));c.fillText(percent?fa(v)+"٪":fa(v),pad.l-8,y+7)}
- const step=labels.length>1?cw/(labels.length-1):cw;c.textAlign="center";c.font="17px Tahoma";const every=Math.max(1,Math.ceil(labels.length/10));labels.forEach((l,i)=>{if(i%every&&i!==labels.length-1)return;c.fillText(l,pad.l+(labels.length===1?cw/2:i*step),H-24)});
- const cols=["#7C3AED","#059669","#DC2626","#0369A1","#F59E0B"];series.forEach((s,k)=>{c.strokeStyle=cols[k%cols.length];c.fillStyle=cols[k%cols.length];c.lineWidth=4;c.beginPath();s.v.forEach((v,i)=>{const x=pad.l+(labels.length===1?cw/2:i*step),y=pad.t+ch*(1-v/max);i?c.lineTo(x,y):c.moveTo(x,y)});c.stroke();s.v.forEach((v,i)=>{const x=pad.l+(labels.length===1?cw/2:i*step),y=pad.t+ch*(1-v/max);c.beginPath();c.arc(x,y,6,0,Math.PI*2);c.fill()});c.fillStyle=txt;c.textAlign="left";c.font="17px Tahoma";c.fillText(s.name,pad.l+20+k*160,18);c.fillStyle=cols[k%cols.length];c.fillRect(pad.l+k*160,6,14,7)})}
-function renderReport(){
- const type=$("#reportType").value,cats=getCats(type);const old=Number($("#reportCat").value);$("#reportCat").innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");if(cats.some(c=>c.id===old))$("#reportCat").value=old;
- const period=$("#reportPeriod").value,cat=Number($("#reportCat").value),b=buckets(period),range=txs.filter(t=>inRange(t,b.s,b.e)),inc=range.filter(t=>t.type==="income").reduce((s,t)=>s+t.amount,0),exp=range.filter(t=>t.type==="expense").reduce((s,t)=>s+t.amount,0),all=inc+exp||1;
- $("#rIncome").textContent=privacyHidden?fa(Math.round(inc/all*100))+"٪":money(inc);$("#rExpense").textContent=privacyHidden?fa(Math.round(exp/all*100))+"٪":money(exp);$("#rBalance").textContent=privacyHidden?"درصدی":money(inc-exp);$("#reportRange").textContent=`${disp(iso(b.s))} تا ${disp(iso(b.e))}`;
- let vals=b.a.map(x=>bucketVal(type,cat,null,x));if(privacyHidden){const m=Math.max(0,...vals);vals=vals.map(v=>m?Math.round(v/m*100):0)}
- const cc=cats.find(c=>c.id===cat);draw($("#reportChart"),b.a.map(x=>x.label),[{name:cc?.label||"",v:vals}],privacyHidden);
- $("#reportNote").textContent=privacyHidden?"حالت خصوصی: مبالغ مخفی هستند و بیشترین واحد زمانی بازه ۱۰۰٪ در نظر گرفته شده است.":"روند حوزه انتخاب‌شده در بازه زمانی.";
- const total=range.filter(t=>t.type===type).reduce((s,t)=>s+t.amount,0);$("#reportRows").innerHTML=cats.map(c=>{const v=range.filter(t=>t.type===type&&t.catId===c.id).reduce((s,t)=>s+t.amount,0);if(!v)return"";const p=total?Math.round(v/total*100):0;return `<div class="sum-row"><span class="sum-dot" style="background:${c.color}"></span><span class="sum-lbl">${esc(c.label)}</span><span class="bar"><i style="width:${p}%;background:${c.color}"></i></span><span class="pct">${fa(p)}٪</span><span class="sum-val">${privacyHidden?"":money(v)}</span></div>`}).join("")||'<div class="empty">اطلاعاتی وجود ندارد.</div>';
- $("#reportEye").textContent=privacyHidden?"🙈":"👁";
+function buckets(p){
+ const {s,e,unit}=periodInfo(p),a=[];
+ if(unit==="day"){
+   let d=new Date(s),i=0;
+   while(d<=e&&i<32){a.push({label:p==="weekly"?pparts(d).w:fa(pparts(d).d),s:new Date(d),e:new Date(d)});d.setDate(d.getDate()+1);i++}
+ }else{
+   let d=startWeek(s),i=1;
+   while(d<=e&&i<=60){
+     let weekStart=new Date(d),weekEnd=new Date(d);weekEnd.setDate(weekEnd.getDate()+6);
+     let realStart=weekStart<s?new Date(s):new Date(weekStart),realEnd=weekEnd>e?new Date(e):new Date(weekEnd);
+     if(realStart<=realEnd){a.push({label:"هفته "+fa(i),s:realStart,e:realEnd});i++}
+     d.setDate(d.getDate()+7);
+   }
+ }
+ return{a,s,e};
 }
 function renderAnalysis(){
- const type=$("#analysisType").value,cats=getCats(type),old=Number($("#analysisCat").value);$("#analysisCat").innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");if(cats.some(c=>c.id===old))$("#analysisCat").value=old;
- const cat=Number($("#analysisCat").value),c=cats.find(x=>x.id===cat)||cats[0];if(!analysisSubs.length||!analysisSubs.every(s=>(c?.subs||[]).includes(s)))analysisSubs=(c?.subs||[]).slice(0,2);
- $("#analysisSubs").innerHTML=(c?.subs||[]).map(s=>`<button class="sub-chip ${analysisSubs.includes(s)?"on":""}" data-sub="${esc(s)}">${esc(s)}</button>`).join("");document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{const s=b.dataset.sub;analysisSubs=analysisSubs.includes(s)?analysisSubs.filter(x=>x!==s):[...analysisSubs,s].slice(-5);renderAnalysis()});
- const b=buckets($("#analysisPeriod").value),ss=analysisSubs.map(sub=>{let v=b.a.map(x=>bucketVal(type,cat,sub,x));if(privacyHidden){const m=Math.max(0,...v);v=v.map(x=>m?Math.round(x/m*100):0)}return{name:sub,v}});
- draw($("#analysisChart"),b.a.map(x=>x.label),ss,privacyHidden);$("#analysisEye").textContent=privacyHidden?"🙈":"👁";
+ const type=$("#analysisType").value,cats=getCats(type),old=Number($("#analysisCat").value);
+ $("#analysisCat").innerHTML=cats.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");if(cats.some(c=>c.id===old))$("#analysisCat").value=old;
+ let cat=Number($("#analysisCat").value),c=cats.find(x=>x.id===cat)||cats[0];cat=c?.id;
+ if(!analysisSubs.length||!analysisSubs.every(s=>(c?.subs||[]).includes(s)))analysisSubs=(c?.subs||[]).slice(0,2);
+ $("#analysisSubs").innerHTML=(c?.subs||[]).map(s=>`<button class="sub-chip ${analysisSubs.includes(s)?"on":""}" data-sub="${esc(s)}">${esc(s)}</button>`).join("");
+ document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{const s=b.dataset.sub;analysisSubs=analysisSubs.includes(s)?analysisSubs.filter(x=>x!==s):[...analysisSubs,s].slice(-5);renderAnalysis()});
+ const b=buckets($("#analysisPeriod").value),rawSeries=analysisSubs.map(sub=>({name:sub,v:b.a.map(x=>bucketVal(type,cat,sub,x))}));
+ let series=rawSeries;
+ if(privacyHidden){const globalMax=Math.max(0,...rawSeries.flatMap(s=>s.v));series=rawSeries.map(s=>({name:s.name,v:s.v.map(v=>globalMax?Math.round(v/globalMax*100):0)}));}
+ draw($("#analysisChart"),b.a.map(x=>x.label),series,privacyHidden);$("#analysisEye").textContent=privacyHidden?"🙈":"👁";
 }
 function renderManage(){
  const cats=getCats(manageType);$("#manageCats").innerHTML=cats.map(c=>`<div class="manage-card"><div class="manage-row"><input value="${esc(c.label)}" data-name="${c.id}"><input type="color" value="${c.color}" data-color="${c.id}" style="width:54px;padding:3px"></div><div style="font-size:11px;font-weight:700;margin:6px 0">زیرحوزه‌ها</div>${(c.subs||[]).map((s,i)=>`<div class="manage-row"><input value="${esc(s)}" data-subname="${c.id}" data-i="${i}"><button class="icon-btn" data-delsub="${c.id}" data-i="${i}">حذف</button></div>`).join("")}<button class="icon-btn" style="width:100%;padding:8px" data-addsub="${c.id}">+ افزودن زیرحوزه</button></div>`).join("");
@@ -207,45 +236,67 @@ function renderManage(){
  document.querySelectorAll("[data-delsub]").forEach(b=>b.onclick=()=>{const c=cats.find(x=>x.id==b.dataset.delsub),k=Number(b.dataset.i),n=c.subs[k];if(txs.some(t=>t.catId===c.id&&t.subcat===n))return alert("این زیرحوزه تراکنش دارد.");if(confirm("زیرحوزه حذف شود؟")){c.subs.splice(k,1);save()}});
 }
 function renderAll(){renderCats();renderHome();renderHistory();renderReport();renderAnalysis();renderManage()}
-document.querySelectorAll(".type-btn[data-type]").forEach(b=>b.onclick=()=>{selectedType=b.dataset.type;selectedCat=getCats()[0]?.id||null;selectedSub="";document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x===b));renderCats()});
-$("#saveBtn").onclick=()=>{const amount=parseAmount($("#amount").value);if(!amount)return alert("مبلغ را وارد کنید.");const item={id:editingId||String(Date.now()),type:selectedType,amount,catId:selectedCat,subcat:selectedSub,date:$("#date").value||today(),title:$("#title").value.trim(),note:$("#note").value.trim(),createdAt:editingId?(txs.find(t=>t.id===editingId)?.createdAt||Date.now()):Date.now()};if(editingId){txs=txs.map(t=>t.id===editingId?item:t);editingId=null;$("#saveBtn").textContent="ثبت تراکنش"}else txs.push(item);$("#amount").value="";$("#title").value="";$("#note").value="";selectedSub="";save()};
-window.editTx=id=>{const t=txs.find(x=>x.id===id);if(!t)return;editingId=id;selectedType=t.type;selectedCat=t.catId;selectedSub=t.subcat||"";$("#amount").value=formatAmountInput(t.amount);$("#date").value=t.date;$("#title").value=t.title;$("#note").value=t.note;document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x.dataset.type===t.type));$("#saveBtn").textContent="ذخیره ویرایش";document.querySelector('[data-view="homeView"]').click();renderCats();scrollTo({top:0,behavior:"smooth"})};
+document.querySelectorAll(".type-btn[data-type]").forEach(b=>b.onclick=()=>{selectedType=b.dataset.type;selectedCat=null;selectedSub="";document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x===b));renderCats()});
+$("#saveBtn").onclick=()=>{
+ const amount=Number($("#amount").value.replace(/[^\d]/g,""));
+ if(!amount)return alert("مبلغ را وارد کنید.");
+ if(selectedCat===null||selectedCat===undefined)return alert("لطفاً ابتدا حوزه را انتخاب کنید.");
+ const cat=getCats(selectedType).find(c=>c.id===selectedCat);if(!cat)return alert("حوزه انتخاب‌شده معتبر نیست.");
+ if(Array.isArray(cat.subs)&&cat.subs.length&&!selectedSub)return alert("لطفاً زیرحوزه را انتخاب کنید.");
+ const oldItem=editingId?txs.find(t=>t.id===editingId):null;
+ const item={id:editingId||String(Date.now()),type:selectedType,amount,catId:selectedCat,subcat:selectedSub,date:$("#date").value||today(),title:$("#title").value.trim(),note:$("#note").value.trim(),createdAt:oldItem?.createdAt||Date.now()};
+ if(editingId){txs=txs.map(t=>t.id===editingId?item:t);editingId=null;$("#saveBtn").textContent="ثبت تراکنش"}else txs.push(item);
+ $("#amount").value="";$("#title").value="";$("#note").value="";selectedCat=null;selectedSub="";save();
+};
+window.editTx=id=>{const t=txs.find(x=>x.id===id);if(!t)return;editingId=id;selectedType=t.type;selectedCat=t.catId;selectedSub=t.subcat||"";$("#amount").value=t.amount;$("#date").value=t.date;$("#title").value=t.title;$("#note").value=t.note;document.querySelectorAll(".type-btn[data-type]").forEach(x=>x.classList.toggle("on",x.dataset.type===t.type));$("#saveBtn").textContent="ذخیره ویرایش";document.querySelector('[data-view="homeView"]').click();renderCats();scrollTo({top:0,behavior:"smooth"})};
 window.delTx=id=>{if(confirm("تراکنش حذف شود؟")){txs=txs.filter(t=>t.id!==id);save()}};
 $("#prevDay").onclick=()=>{historyDate=addDays(historyDate,-1);renderHistory()};$("#nextDay").onclick=()=>{historyDate=addDays(historyDate,1);renderHistory()};$("#typeFilter").onchange=renderHistory;$("#catFilter").onchange=renderHistory;
 $("#reportType").onchange=renderReport;$("#reportPeriod").onchange=renderReport;$("#reportCat").onchange=renderReport;$("#analysisType").onchange=()=>{analysisSubs=[];renderAnalysis()};$("#analysisPeriod").onchange=renderAnalysis;$("#analysisCat").onchange=()=>{analysisSubs=[];renderAnalysis()};
 $("#reportEye").onclick=()=>{privacyHidden=!privacyHidden;renderReport();renderAnalysis()};$("#analysisEye").onclick=()=>{privacyHidden=!privacyHidden;renderReport();renderAnalysis()};
+async function shareImageCanvas(canvas,filename,title){
+ const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/jpeg",0.94));
+ if(!blob)return alert("ساخت تصویر انجام نشد.");
+ const file=new File([blob],filename,{type:"image/jpeg"});
+ try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title,text:title});return;}}catch(err){if(err&&err.name==="AbortError")return;}
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},1000);
+}
+
+$("#shareHistory").onclick=async()=>{
+ const day=txs.filter(t=>t.date===historyDate).sort((a,b)=>Number(a.createdAt||0)-Number(b.createdAt||0));
+ if(!day.length)return alert("در این روز تراکنشی برای اشتراک وجود ندارد.");
+ const incomes=day.filter(t=>t.type==="income"),expenses=day.filter(t=>t.type==="expense");
+ const inc=incomes.reduce((s,t)=>s+Number(t.amount||0),0),exp=expenses.reduce((s,t)=>s+Number(t.amount||0),0),balance=inc-exp;
+ const rows=incomes.length+expenses.length,height=Math.max(1300,780+rows*75),cv=document.createElement("canvas");cv.width=1080;cv.height=height;
+ const c=cv.getContext("2d");c.direction="rtl";c.fillStyle="#FFF9F2";c.fillRect(0,0,cv.width,cv.height);
+ c.fillStyle="#30203F";c.fillRect(0,0,1080,155);c.fillStyle="#FFFFFF";c.textAlign="center";c.font="bold 42px Tahoma";c.fillText("گزارش سوابق روزانه",540,70);c.font="24px Tahoma";c.fillText(disp(historyDate),540,115);
+ function summaryBox(x,title,value,color){c.fillStyle="#FFFFFF";c.fillRect(x,185,300,150);c.strokeStyle="#DDD3E7";c.strokeRect(x,185,300,150);c.fillStyle=color;c.font="bold 22px Tahoma";c.textAlign="center";c.fillText(title,x+150,225);c.font="bold 27px Tahoma";c.fillText(money(value),x+150,280)}
+ summaryBox(40,"درآمد روز",inc,"#15803D");summaryBox(390,"هزینه روز",exp,"#DC2626");summaryBox(740,"مانده",balance,balance>=0?"#2563EB":"#DC2626");
+ const total=inc+exp,incomePct=total?Math.round(inc/total*100):0,expensePct=total?100-incomePct:0;
+ c.fillStyle="#33263D";c.font="bold 24px Tahoma";c.textAlign="center";c.fillText("مقایسه درآمد و هزینه",540,385);
+ const barX=100,barY=420,barW=880,barH=28;c.fillStyle="#E5E7EB";c.fillRect(barX,barY,barW,barH);c.fillStyle="#16A34A";c.fillRect(barX,barY,barW*(incomePct/100),barH);c.fillStyle="#DC2626";c.fillRect(barX+barW*(incomePct/100),barY,barW*(expensePct/100),barH);
+ c.font="bold 22px Tahoma";c.fillStyle="#15803D";c.textAlign="left";c.fillText(fa(incomePct)+"٪ درآمد",100,485);c.fillStyle="#DC2626";c.textAlign="right";c.fillText(fa(expensePct)+"٪ هزینه",980,485);
+ let y=550;
+ function drawSection(title,items,color){c.fillStyle=color;c.font="bold 30px Tahoma";c.textAlign="right";c.fillText(title,990,y);y+=45;if(!items.length){c.fillStyle="#777";c.font="21px Tahoma";c.fillText("موردی ثبت نشده است.",990,y);y+=60;return;}items.forEach(t=>{const cat=catById(t.catId);c.fillStyle="#FFFFFF";c.fillRect(70,y,940,62);c.strokeStyle="#E5E1EA";c.strokeRect(70,y,940,62);c.textAlign="right";c.fillStyle="#2A1A08";c.font="bold 20px Tahoma";c.fillText(t.title||cat.label,980,y+25);c.fillStyle="#6B6470";c.font="17px Tahoma";c.fillText(cat.label+(t.subcat?" ← "+t.subcat:""),980,y+50);c.textAlign="left";c.fillStyle=color;c.font="bold 21px Tahoma";c.fillText(money(t.amount),100,y+38);y+=75;});y+=25;}
+ drawSection("درآمدها",incomes,"#15803D");drawSection("هزینه‌ها",expenses,"#DC2626");
+ c.fillStyle="#EEF4FF";c.fillRect(70,y,940,105);c.fillStyle=balance>=0?"#1D4ED8":"#DC2626";c.textAlign="center";c.font="bold 25px Tahoma";c.fillText(balance>=0?"مازاد روز":"کسری روز",540,y+40);c.font="bold 31px Tahoma";c.fillText(money(Math.abs(balance)),540,y+80);c.fillStyle="#6B6470";c.font="17px Tahoma";c.fillText("ثبت با برنامه ثبت مخارج",540,cv.height-35);
+ await shareImageCanvas(cv,"daily-history.jpg","سوابق مالی روزانه");
+};
+
 $("#shareReport").onclick=async()=>{
- const src=$("#reportChart"),cv=document.createElement("canvas");cv.width=1080;cv.height=1350;const c=cv.getContext("2d");
- c.fillStyle="#FFF9F2";c.fillRect(0,0,1080,1350);c.fillStyle="#2A1A08";c.textAlign="center";c.font="bold 42px Tahoma";c.fillText("گزارش مالی",540,70);
- c.font="24px Tahoma";c.fillText($("#reportRange").textContent,540,112);c.font="20px Tahoma";c.fillText(privacyHidden?"حالت خصوصی — فقط درصدها":"نمایش مبالغ",540,150);c.drawImage(src,70,210,940,450);
- c.textAlign="right";c.font="26px Tahoma";let y=735;document.querySelectorAll("#reportRows .sum-row").forEach(r=>{c.fillText(r.innerText.replace(/\s+/g," "),990,y);y+=48});
- c.textAlign="center";c.font="18px Tahoma";c.fillText("گروه درخشیدن و دریافت کردن بوشهر",540,1310);
- const blob=await new Promise(resolve=>cv.toBlob(resolve,"image/jpeg",0.92));if(!blob)return alert("ساخت تصویر گزارش انجام نشد.");const file=new File([blob],"financial-report.jpg",{type:"image/jpeg"});
- try{if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"گزارش مالی",text:"گزارش مالی"});return;}}catch(err){if(err&&err.name==="AbortError")return;}
- const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="financial-report.jpg";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},1000);
+ const src=$("#reportChart"),rows=[...document.querySelectorAll("#reportRows .sum-row")],cv=document.createElement("canvas");
+ cv.width=1080;cv.height=Math.max(1350,980+rows.length*55);const c=cv.getContext("2d");c.direction="rtl";c.fillStyle="#FFF9F2";c.fillRect(0,0,cv.width,cv.height);
+ c.fillStyle="#2A1A08";c.textAlign="center";c.font="bold 42px Tahoma";c.fillText("گزارش مالی",540,65);c.font="24px Tahoma";c.fillText($("#reportRange").textContent,540,105);c.font="19px Tahoma";c.fillText(privacyHidden?"حالت خصوصی":"نمایش مبالغ",540,140);
+ const metrics=[{title:"کل درآمد",value:$("#rIncome").textContent,color:"#15803D"},{title:"کل هزینه",value:$("#rExpense").textContent,color:"#DC2626"},{title:"مانده",value:$("#rBalance").textContent,color:"#2563EB"}];
+ metrics.forEach((m,i)=>{const x=40+i*350;c.fillStyle="#FFFFFF";c.fillRect(x,175,300,125);c.strokeStyle="#DED6E4";c.strokeRect(x,175,300,125);c.fillStyle=m.color;c.font="bold 20px Tahoma";c.fillText(m.title,x+150,215);c.font="bold 23px Tahoma";c.fillText(m.value,x+150,260)});
+ c.drawImage(src,70,340,940,450);c.textAlign="right";c.fillStyle="#2A1A08";c.font="bold 26px Tahoma";c.fillText("تفکیک حوزه‌ها",990,850);let y=900;
+ rows.forEach(r=>{c.font="21px Tahoma";c.fillStyle="#33263D";c.fillText(r.innerText.replace(/\s+/g," "),990,y);y+=50});
+ c.fillStyle="#6B6470";c.textAlign="center";c.font="18px Tahoma";c.fillText("گروه درخشیدن و دریافت کردن بوشهر",540,cv.height-40);
+ await shareImageCanvas(cv,"financial-report.jpg","گزارش مالی");
 };
 $("#manageExpense").onclick=()=>{manageType="expense";$("#manageExpense").classList.add("on");$("#manageIncome").classList.remove("on");renderManage()};$("#manageIncome").onclick=()=>{manageType="income";$("#manageIncome").classList.add("on");$("#manageExpense").classList.remove("on");renderManage()};
 document.querySelectorAll(".bnav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".bnav button").forEach(x=>x.classList.remove("on"));b.classList.add("on");document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));$("#"+b.dataset.view).classList.add("on");renderAll()});
 $("#themeBtn").onclick=()=>{const d=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=d?"light":"dark";$("#themeBtn").textContent=d?"☾ حالت شب":"☀ حالت روشن";localStorage.setItem("expense_theme",d?"light":"dark");renderReport();renderAnalysis()};document.documentElement.dataset.theme=localStorage.getItem("expense_theme")||"light";if(document.documentElement.dataset.theme==="dark")$("#themeBtn").textContent="☀ حالت روشن";
 renderAll();
 </script>
-<script>
-let deferredInstallPrompt=null;
-window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredInstallPrompt=event;});
-window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;const b=document.getElementById('installAppBtn');const h=document.getElementById('installHelp');if(b){b.textContent='برنامه نصب شد';b.disabled=true}if(h)h.classList.remove('show');});
-document.addEventListener('DOMContentLoaded',()=>{const b=document.getElementById('installAppBtn');const h=document.getElementById('installHelp');if(!b)return;const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;if(standalone){b.textContent='برنامه نصب شده است';b.disabled=true;return}b.addEventListener('click',async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();try{await deferredInstallPrompt.userChoice}catch(_){}deferredInstallPrompt=null;}else if(h){h.classList.toggle('show')}});});
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('/expence-tracker/service-worker.js', {
-        scope: '/expence-tracker/',
-        updateViaCache: 'none'
-      });
-      await reg.update();
-    } catch (err) {
-      console.error('Service Worker registration failed:', err);
-    }
-  });
-}
-</script>
+
 </body></html>
